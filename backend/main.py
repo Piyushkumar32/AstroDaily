@@ -1,6 +1,14 @@
 import os
 import re
+import sys
+from pathlib import Path
 from typing import Optional
+
+# Ensure the backend directory is in sys.path for robust modular imports
+backend_dir = str(Path(__file__).resolve().parent)
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
