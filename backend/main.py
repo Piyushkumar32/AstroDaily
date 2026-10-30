@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Optional
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,6 +28,15 @@ app.add_middleware(
 )
 
 
+def _extract_youtube_thumbnail(url: str) -> Optional[str]:
+    """Helper to derive a thumbnail URL for YouTube videos if NASA does not provide one."""
+    youtube_match = re.search(r"(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^\"&?\/\s]{11})", url)
+    if youtube_match:
+        video_id = youtube_match.group(1)
+        return f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
+    return None
+
+
 @app.get("/", tags=["General"])
 async def root():
     """Root endpoint providing basic API information and documentation link."""
@@ -52,7 +62,8 @@ async def health_check():
 @app.get("/api/apod", response_model=ApodResponse, tags=["APOD"])
 async def get_apod(date: Optional[str] = None):
     """
-    Fetch Astronomy Picture of the Day (APOD) data from NASA with in-memory daily caching.
+    Fetch Astronomy Picture of the Day (APOD) data from NASA with support for both
+    image and video media types, plus in-memory caching.
     """
     # Check cache first
     cached_apod = apod_cache.get(date)
@@ -61,6 +72,15 @@ async def get_apod(date: Optional[str] = None):
 
     # Fetch from NASA API
     raw_data = await fetch_apod_from_nasa(date=date)
+
+    media_type = raw_data.get("media_type", "image").lower()
+    media_url = raw_data.get("url", "")
+    thumbnail_url = raw_data.get("thumbnail_url")
+
+    # If media is video and thumbnail was not returned, attempt fallback extraction
+    if media_type == "video" and not thumbnail_url and media_url:
+        thumbnail_url = _extract_youtube_thumbnail(media_url)
+
     copyright_val = raw_data.get("copyright")
     if copyright_val:
         copyright_val = str(copyright_val).strip()
@@ -69,10 +89,10 @@ async def get_apod(date: Optional[str] = None):
         date=raw_data.get("date", ""),
         title=raw_data.get("title", "Untitled Astronomy Picture"),
         explanation=raw_data.get("explanation", ""),
-        url=raw_data.get("url", ""),
+        url=media_url,
         hdurl=raw_data.get("hdurl"),
-        media_type=raw_data.get("media_type", "image"),
-        thumbnail_url=raw_data.get("thumbnail_url"),
+        media_type=media_type,
+        thumbnail_url=thumbnail_url,
         copyright=copyright_val,
     )
 
