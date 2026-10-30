@@ -1,14 +1,23 @@
 import React from "react";
-import ApodCardPlaceholder from "@/components/ApodCardPlaceholder";
+import ApodShowcase from "@/components/ApodShowcase";
 
 export default function Home() {
+  const currentDate = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 max-w-5xl space-y-12">
       {/* Hero Section */}
       <section className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 shadow-inner">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 shadow-inner">
           <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping" />
-          AstroDaily &bull; Astronomy Picture of the Day
+          <span>NASA Astronomy Picture of the Day</span>
+          <span className="text-slate-500">&bull;</span>
+          <span className="text-slate-300 font-normal">{currentDate}</span>
         </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white">
@@ -23,9 +32,9 @@ export default function Home() {
         </p>
       </section>
 
-      {/* APOD Main Showcase Placeholder */}
+      {/* APOD Main Showcase */}
       <section>
-        <ApodCardPlaceholder />
+        <ApodShowcase />
       </section>
 
       {/* Feature Highlights Section */}
