@@ -1,14 +1,8 @@
 import React from "react";
 import ApodShowcase from "@/components/ApodShowcase";
+import CurrentDateBadge from "@/components/CurrentDateBadge";
 
 export default function Home() {
-  const currentDate = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 max-w-5xl space-y-12">
       {/* Hero Section */}
@@ -17,7 +11,7 @@ export default function Home() {
           <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-ping" />
           <span>NASA Astronomy Picture of the Day</span>
           <span className="text-slate-500">&bull;</span>
-          <span className="text-slate-300 font-normal">{currentDate}</span>
+          <CurrentDateBadge />
         </div>
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white">

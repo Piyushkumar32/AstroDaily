@@ -107,12 +107,29 @@ export default function ApodShowcase() {
           <span className="text-xs font-semibold tracking-wide uppercase text-slate-300">
             Astronomy Picture of the Day
           </span>
+          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700/60 uppercase">
+            {apod.media_type}
+          </span>
         </div>
-        {apod.date && (
-          <div className="text-xs text-indigo-300 font-mono bg-indigo-950/60 px-3 py-1 rounded-md border border-indigo-800/50 shadow-sm">
-            {apod.date}
-          </div>
-        )}
+
+        <div className="flex items-center gap-2">
+          {apod.hdurl && (
+            <a
+              href={apod.hdurl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-indigo-950/90 hover:bg-indigo-900 text-indigo-300 border border-indigo-700/60 transition-all hover:scale-105 active:scale-95 shadow-sm"
+              title="View full high-resolution image in a new tab"
+            >
+              <span>🔍</span> View HD Image
+            </a>
+          )}
+          {apod.date && (
+            <div className="text-xs text-indigo-300 font-mono bg-indigo-950/60 px-3 py-1 rounded-md border border-indigo-800/50 shadow-sm">
+              {apod.date}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Dynamic Media Showcase Area */}
@@ -144,13 +161,38 @@ export default function ApodShowcase() {
 
       {/* Content Section */}
       <div className="p-6 sm:p-8 space-y-4">
-        <div>
-          <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">
-            Featured Target
-          </span>
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mt-1 tracking-tight">
-            {apod.title}
-          </h2>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">
+              Featured Target
+            </span>
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mt-1 tracking-tight">
+              {apod.title}
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            {apod.hdurl && (
+              <a
+                href={apod.hdurl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white shadow-lg shadow-indigo-600/30 transition-all cursor-pointer"
+              >
+                <span>🔍</span> View HD Image
+              </a>
+            )}
+            {apod.media_type === "video" && (
+              <a
+                href={apod.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-purple-600 hover:bg-purple-500 active:scale-95 text-white shadow-lg shadow-purple-600/30 transition-all cursor-pointer"
+              >
+                <span>▶️</span> Open NASA Video
+              </a>
+            )}
+          </div>
         </div>
 
         <p className="text-slate-300 text-sm sm:text-base leading-relaxed whitespace-pre-line">
