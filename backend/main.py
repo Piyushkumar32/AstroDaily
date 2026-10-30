@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from app.config import settings
 from app.client import fetch_apod_from_nasa
 from app.schemas import ApodResponse
+from app.cache import apod_cache
 
 # Initialize FastAPI application
 app = FastAPI(
@@ -51,15 +52,20 @@ async def health_check():
 @app.get("/api/apod", response_model=ApodResponse, tags=["APOD"])
 async def get_apod(date: Optional[str] = None):
     """
-    Fetch Astronomy Picture of the Day (APOD) data from NASA.
-    If date is omitted, fetches today's APOD.
+    Fetch Astronomy Picture of the Day (APOD) data from NASA with in-memory daily caching.
     """
+    # Check cache first
+    cached_apod = apod_cache.get(date)
+    if cached_apod:
+        return cached_apod
+
+    # Fetch from NASA API
     raw_data = await fetch_apod_from_nasa(date=date)
     copyright_val = raw_data.get("copyright")
     if copyright_val:
         copyright_val = str(copyright_val).strip()
 
-    return ApodResponse(
+    apod_result = ApodResponse(
         date=raw_data.get("date", ""),
         title=raw_data.get("title", "Untitled Astronomy Picture"),
         explanation=raw_data.get("explanation", ""),
@@ -69,6 +75,10 @@ async def get_apod(date: Optional[str] = None):
         thumbnail_url=raw_data.get("thumbnail_url"),
         copyright=copyright_val,
     )
+
+    # Store in daily cache
+    apod_cache.set(apod_result)
+    return apod_result
 
 
 if __name__ == "__main__":
