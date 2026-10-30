@@ -1,6 +1,6 @@
 # AstroDaily - Local Development Guide
 
-This guide details how to run both the Frontend and Backend services independently for local development.
+AstroDaily is a modern Astronomy Picture of the Day application powered by FastAPI and Next.js.
 
 ---
 
@@ -8,7 +8,7 @@ This guide details how to run both the Frontend and Backend services independent
 
 - **Node.js** (v18.18.0 or newer) and **npm**
 - **Python** (v3.10 or newer) and **pip**
-- (Optional) NASA API key from [api.nasa.gov](https://api.nasa.gov/). You can start with `DEMO_KEY`.
+- A NASA API key from [api.nasa.gov](https://api.nasa.gov/). (Falls back to `DEMO_KEY` if not configured).
 
 ---
 
@@ -21,11 +21,11 @@ This guide details how to run both the Frontend and Backend services independent
 
 2. (Optional but recommended) Create and activate a virtual environment:
    ```bash
-   # Windows
+   # Windows PowerShell
    python -m venv .venv
    .venv\Scripts\activate
 
-   # macOS/Linux
+   # macOS / Linux
    python3 -m venv .venv
    source .venv/bin/activate
    ```
@@ -35,18 +35,22 @@ This guide details how to run both the Frontend and Backend services independent
    pip install -r requirements.txt
    ```
 
-4. Configure environment variables:
+4. Configure your environment variables:
    ```bash
    cp .env.example .env
    ```
+   Add your `NASA_API_KEY`:
+   ```ini
+   NASA_API_KEY=YOUR_NASA_API_KEY
+   ```
 
-5. Start the FastAPI development server:
+5. Start the backend development server:
    ```bash
    uvicorn main:app --reload --host 127.0.0.1 --port 8000
    ```
 
-6. Verify backend is running:
-   - Root endpoint: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+6. Verify endpoints:
+   - APOD Data: [http://127.0.0.1:8000/api/apod](http://127.0.0.1:8000/api/apod)
    - Health check: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
    - Interactive Swagger API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
@@ -64,17 +68,27 @@ This guide details how to run both the Frontend and Backend services independent
    npm install
    ```
 
-3. Start the Next.js development server:
+3. (Optional) Configure environment variables:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Default:
+   ```ini
+   NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+   ```
+
+4. Start the frontend development server:
    ```bash
    npm run dev
    ```
 
-4. Open your browser and navigate to:
+5. Open your browser and navigate to:
    - [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 4. Architecture Notes
+## 4. Architecture & Security Notes
 
-- **CORS**: FastAPI is configured to accept cross-origin requests from `http://localhost:3000`.
-- **API Security**: The NASA API key is maintained strictly server-side in the backend service and is never exposed directly to client-side code.
+- **API Security**: The NASA API key is strictly maintained server-side and is never exposed in client bundles.
+- **In-Memory Caching**: APOD responses are cached in memory by date to minimize upstream API consumption and respect rate limits.
+- **CORS**: FastAPI allows cross-origin requests originating from the Next.js development server (`http://localhost:3000`).
